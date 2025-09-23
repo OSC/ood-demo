@@ -9,4 +9,4 @@ Pull this repository down and issue `rake build`. This will build the container.
 
 Start the container with `rake start` and the container will be at `http://localhost:8080`.
 
-A user has already been created, simply login as `jesse` with the password `owens`.
+A user has already been created, simply login as `jesse@localhost` with the password `owens`.
