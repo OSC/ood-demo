@@ -1,0 +1,20 @@
+# Wait for the Jupyter server to start
+echo "Waiting for Jupyter server to open port ${port}..."
+if wait_until_port_used "${host}:${port}" 600; then
+  echo "Discovered Jupyter server listening on port ${port}!"
+else
+  echo "Timed out waiting for Jupyter server to open port ${port}!"
+  clean_up 1
+fi
+sleep 2
+
+# Write connection.yml so OOD can display the session
+(
+  umask 077
+  cat > connection.yml << EOL
+---
+host: "${host}"
+port: "${port}"
+password: "${password}"
+EOL
+)

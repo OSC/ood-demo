@@ -56,3 +56,13 @@ c.NotebookApp.notebook_dir = '${HOME}'
 c.NotebookApp.disable_check_xsrf = True
 EOL
 )
+
+if [ -f /usr/share/lmod/lmod/init/bash ]; then
+  source /usr/share/lmod/lmod/init/bash
+fi
+
+module purge
+module use /opt/modulefiles
+module load <%= context.auto_modules_jupyter %>
+
+which jupyter || echo "Jupyter not found!"

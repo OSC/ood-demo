@@ -4,4 +4,4 @@ category: Interactive Apps
 subcategory: Servers
 role: batch_connect
 description: |
-  This app will launch a JupyterLab.
+  This app will launch a JupyterLab session with selectable versions.

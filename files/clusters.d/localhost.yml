@@ -5,3 +5,6 @@ v2:
     host: localhost
   metadata:
     title: Localhost
+  batch_connect:
+    basic:
+      module_file_dir: "/etc/ood/config/modules"

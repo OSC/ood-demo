@@ -1,5 +1,13 @@
-cluster: localhost
-
+---
+cluster: "localhost"
 
 form:
   - bc_num_hours
+  - auto_modules_jupyter
+
+attributes:
+  auto_modules_jupyter:
+    widget: "select"
+    label: "Jupyter Version"
+    help: "Select which JupyterLab module to load"
+    default: false

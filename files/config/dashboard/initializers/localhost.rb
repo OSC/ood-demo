@@ -1,6 +1,6 @@
 Rails.application.config.after_initialize do
   require 'ood_core'
-  
+
   class OodCore::Job::Adapters::Localhost < OodCore::Job::Adapter
 
     def submit(script, after: [], afterok: [], afternotok: [], afterany: [])
@@ -13,7 +13,7 @@ Rails.application.config.after_initialize do
 
       File.open(file, 'w') { |f| f.write(content) }
       FileUtils.chmod(0755, file)
-      
+
       pid = spawn(file, [:out, :err] => [script.output_path, 'w'])
       Process.detach(pid)
       pid
@@ -36,13 +36,13 @@ Rails.application.config.after_initialize do
 
     def delete(id)
       pinfo = Process.getpgid(id.to_i)
-      Process.kill('TERM', id.to_i)    
+      Process.kill('TERM', id.to_i)
     end
 
     def info_all(attrs: nil)
       []
     end
-  end  
+  end
 
   class OodCore::Job::Factory
     def self.build_localhost(config = {})

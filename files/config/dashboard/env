@@ -1,2 +1,4 @@
 MOTD_PATH=/etc/motd.md
 MOTD_FORMAT='markdown'
+OOD_BC_DYNAMIC_JS=TRUE
+OOD_MODULE_FILE_DIR=/etc/ood/config/modules
