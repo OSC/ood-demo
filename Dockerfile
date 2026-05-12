@@ -19,7 +19,13 @@ RUN pip3 install jupyter
 RUN sed -i 's|--rpm|--rpm -f --insecure|g' /etc/systemd/system/httpd.service.d/ood-portal.conf
 RUN systemctl enable httpd ondemand-dex
 
+# Mac's need this sed command
+RUN sed -i 's#^CREATE_MAIL_SPOOL=yes#CREATE_MAIL_SPOOL=no#' /etc/default/useradd
+
 RUN useradd jesse
+RUN sudo -u jesse mkdir -p /home/jesse/ondemand/dev
+RUN mkdir -p /var/www/ood/apps/dev/jesse && \
+    ln -s /home/jesse/ondemand/dev /var/www/ood/apps/dev/jesse/gateway
 RUN chmod 600 /etc/shadow
 
 COPY files/ood_portal.yml /etc/ood/config/ood_portal.yml
