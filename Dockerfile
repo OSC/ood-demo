@@ -1,13 +1,13 @@
 FROM rockylinux/rockylinux:9
 LABEL maintainer="tdockendorf@osc.edu; johrstrom@osc.edu"
 
-RUN dnf install -y https://yum.osc.edu/ondemand/4.0/ondemand-release-web-4.0-1.el9.noarch.rpm && \
+RUN dnf install -y https://yum.osc.edu/ondemand/4.2/ondemand-release-web-4.2-1.el9.noarch.rpm && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
 RUN dnf -y update && \
     dnf install -y dnf-utils && \
     dnf config-manager --set-enabled crb && \
-    dnf -y module enable nodejs:20 ruby:3.3 && \
+    dnf -y module enable nodejs:22 ruby:3.3 && \
     dnf install -y epel-release && \
     dnf install -y procps libffi-devel python3-devel gcc && \
     dnf install -y ondemand ondemand-dex && \
