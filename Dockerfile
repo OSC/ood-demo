@@ -11,6 +11,7 @@ RUN dnf -y update && \
     dnf install -y epel-release && \
     dnf install -y procps libffi-devel python3-devel gcc && \
     dnf install -y ondemand ondemand-dex && \
+    dnf install -y xz libyaml-devel && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
 # RUN pip3 install 'setuptools_scm<7' && \

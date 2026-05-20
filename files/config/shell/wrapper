@@ -1,3 +1,15 @@
 #!/bin/bash
 
+# unset all of these as they're inhereted from the shell app
+# and conflict with app development.
+unset RUBYLIB
+unset RUBYOPT
+unset RACK_ENV
+unset NODE_ENV
+unset WSGI_ENV
+unset RAILS_ENV
+unset PASSENGER_APP_ENV
+
+cd $HOME
+
 /bin/bash
