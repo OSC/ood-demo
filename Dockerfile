@@ -29,6 +29,9 @@ RUN mkdir -p /var/www/ood/apps/dev/jesse && \
     ln -s /home/jesse/ondemand/dev /var/www/ood/apps/dev/jesse/gateway
 RUN chmod 600 /etc/shadow
 
+RUN git clone https://github.com/OSC/bc_example_jupyter.git --bare /var/git/bc_example_jupyter
+RUN chown jesse:jesse /var/git/bc_example_jupyter
+
 COPY files/ood_portal.yml /etc/ood/config/ood_portal.yml
 COPY files/clusters.d /etc/ood/config/clusters.d
 COPY files/apps /var/www/ood/apps/sys/
