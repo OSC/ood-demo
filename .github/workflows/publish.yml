@@ -1,0 +1,22 @@
+name: Publish Docker image
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Repositories
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build images
+        run: | 
+          rake build
+      - name: login to dockerhub
+        run: docker login -u ${{ secrets.OSC_ROBOT_DOCKERHUB_USER }} -p ${{ secrets.OSC_ROBOT_DOCKERHUB_TOKEN }}
+      - name: push images to dockerhub
+        run: |
+          docker publish['docker.io']
