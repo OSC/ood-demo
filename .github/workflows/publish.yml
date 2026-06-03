@@ -16,7 +16,7 @@ jobs:
         run: | 
           rake build
       - name: login to dockerhub
-        run: docker login -u ${{ secrets.OSC_ROBOT_DOCKERHUB_USER }} -p ${{ secrets.OSC_ROBOT_DOCKERHUB_TOKEN }}
+        run: podman login docker.io -u ${{ secrets.OOD_DOCKERHUB_USER }} -p ${{ secrets.OOD_DOCKERHUB_TOKEN }}
       - name: push images to dockerhub
         run: |
-          docker publish['docker.io']
+          rake publish['docker.io']
