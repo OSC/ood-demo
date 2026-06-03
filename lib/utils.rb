@@ -5,16 +5,16 @@ def podman_runtime?
   end
 end
 
-def docker_build_cmd(latest = false)
+def docker_build_cmd
   args = ['build']
-  args.concat ['-t', "#{image_name}:#{latest ? 'latest' : tag}", '-f', 'Dockerfile', '.']
+  args.concat ['-t', "#{image_name}:#{tag}", '-f', 'Dockerfile', '.']
 
   "docker #{args.join(' ')}"
 end
 
-def buildah_build_cmd(latest = false)
+def buildah_build_cmd
   args = ['bud', '--layers']
-  args.concat ['-t', "#{image_name}:#{latest ? 'latest' : tag}", '-f', 'Dockerfile']
+  args.concat ['-t', "#{image_name}:#{tag}", '-f', 'Dockerfile']
 
   "buildah #{args.join(' ')}"
 end
@@ -40,10 +40,10 @@ def image_name
   'openondemand/open-ondemand-demo'
 end
 
-def build_cmd(latest = false)
+def build_cmd
   if podman_runtime?
-    buildah_build_cmd(latest)
+    buildah_build_cmd
   else
-    docker_build_cmd(latest)
+    docker_build_cmd
   end
 end
