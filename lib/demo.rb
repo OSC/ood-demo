@@ -19,3 +19,18 @@ desc 'Restart the demo container'
 task restart: [:stop, :start] do
   # nothing to do, taken care of in dependencies
 end
+
+desc 'Publish the image to a repository'
+task :publish, [:repo] => [:build] do |t, args|
+  repo = args[:repo]
+  err_msg = "Repository is not specified. Must specify repository for example \"rake publish['docker.io']\""
+  raise(StandardError, err_msg) if repo.nil?
+
+  # tag this as the latest as well
+  if tag != "latest"
+    build_cmd(true)
+  end
+
+  sh "#{container_runtime} push #{repo}/#{image_name}:#{tag}"
+  sh "#{container_runtime} push #{repo}/#{image_name}:latest"
+end

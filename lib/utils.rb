@@ -5,18 +5,23 @@ def podman_runtime?
   end
 end
 
-def docker_build_cmd(tag: 'latest')
+def docker_build_cmd(latest = false)
   args = ['build']
-  args.concat ['-t', "#{image_name}:#{tag}", '-f', 'Dockerfile', '.']
+  args.concat ['-t', "#{image_name}:#{latest ? 'latest' : tag}", '-f', 'Dockerfile', '.']
 
   "docker #{args.join(' ')}"
 end
 
-def buildah_build_cmd(tag: 'latest')
+def buildah_build_cmd(latest = false)
   args = ['bud', '--layers']
-  args.concat ['-t', "#{image_name}:#{tag}", '-f', 'Dockerfile']
+  args.concat ['-t', "#{image_name}:#{latest ? 'latest' : tag}", '-f', 'Dockerfile']
 
   "buildah #{args.join(' ')}"
+end
+
+def tag
+  git_tag = `git tag --points-at HEAD`.chomp
+  git_tag.empty? ? 'latest' : git_tag
 end
 
 def container_runtime
@@ -27,18 +32,18 @@ def demo_run_cmd
   [ container_runtime, 'run', '--rm', '--detach',
     '--name', 'ood_demo', '-p 8080:8080',
     '-h', 'ood.demo',
-    "#{image_name}:latest"
+    "#{image_name}:#{tag}"
   ].join(' ')
 end
 
 def image_name
-  'open-ondemand-demo'
+  'openondemand/open-ondemand-demo'
 end
 
-def build_cmd
+def build_cmd(latest = false)
   if podman_runtime?
-    buildah_build_cmd
+    buildah_build_cmd(latest)
   else
-    docker_build_cmd
+    docker_build_cmd(latest)
   end
 end
