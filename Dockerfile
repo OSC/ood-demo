@@ -24,11 +24,16 @@ RUN systemctl enable httpd ondemand-dex
 RUN sed -i 's#^CREATE_MAIL_SPOOL=yes#CREATE_MAIL_SPOOL=no#' /etc/default/useradd
 
 RUN useradd jesse
-RUN sudo -u jesse mkdir -p /home/jesse/ondemand/dev
 RUN mkdir -p /var/www/ood/apps/dev/jesse && \
     ln -s /home/jesse/ondemand/dev /var/www/ood/apps/dev/jesse/gateway
 RUN chmod 600 /etc/shadow
 
+# switch to jesse to make ~/ondemand/dev
+USER jesse
+RUN mkdir -p /home/jesse/ondemand/dev
+
+# switch back to root to do everything else
+USER root
 RUN git clone https://github.com/OSC/bc_example_jupyter.git --bare /var/git/bc_example_jupyter
 RUN chown jesse:jesse /var/git/bc_example_jupyter
 
