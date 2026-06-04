@@ -5,3 +5,9 @@ v2:
     host: localhost
   metadata:
     title: Localhost
+  batch_connect:
+      vnc:
+        script_wrapper: |
+          export PATH="$PATH:/opt/TurboVNC/bin"
+          export WEBSOCKIFY_CMD="/usr/bin/websockify"
+          %s
