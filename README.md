@@ -3,8 +3,17 @@ A container for demonstrating OpenOnDemand
 
 ## Getting started
 
+### For Linux 
 Pull this repository down and issue `rake build` to build the container.
 Or pull it from dockerhub at `openondemand/open-ondemand-demo:latest`.
+
+### For MacOS
+Pull this repository down. Change directory into `MacOS` and build the iamge:
+
+```
+cd MacOS
+docker build -t ood-demo .
+```
 
 ## Starting the container
 
@@ -21,10 +30,10 @@ for proxying and shell access as both rely on allowlists which have been preconf
 
 ```
 docker pull openondemand/open-ondemand-demo:latest
-docker run --rm -p 8080:8080 -h ood.demo openondemand/open-ondemand-demo:latest
+docker run --privileged --rm -p 8080:8080 -h ood.demo openondemand/open-ondemand-demo:latest
 ```
 
-## Loggin in
+## Logging in
 
 Once the container is started, it will be accessible at `http://localhost:8080`.
 
