@@ -48,4 +48,6 @@ COPY files/motd.md /etc/motd.md
 COPY files/apache/00-mutex.conf /etc/httpd/conf.d/00-mutex.conf
 RUN mkdir -p /run/httpd
 
-CMD [ "/sbin/init" ]
+COPY files/entrypoint.sh /bin/entrypoint.sh
+
+CMD [ "/bin/entrypoint.sh" ]
