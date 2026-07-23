@@ -3,6 +3,7 @@ servername: localhost
 port: 8080
 listen_addr_port: 8080
 oidc_remote_user_claim: email
+oidc_crypto_passphrase: dcc94b3a-86b9-11f1-b483-00155d96138e
 dex:
   static_passwords:
   - email: jesse@localhost
