@@ -29,9 +29,12 @@ def container_runtime
 end
 
 def demo_run_cmd
+  # --privileged is required because the container boots systemd as PID 1.
+  # Podman's systemd mode can often manage without it, but Docker cannot,
+  # and the flag is harmless where it isn't strictly needed.
   [ container_runtime, 'run', '--rm', '--detach',
-    '--name', 'ood_demo', '-p 8080:8080',
-    '-h', 'ood.demo',
+    '--name', 'ood_demo', '--privileged',
+    '-p 8080:8080', '-h', 'ood.demo',
     "#{image_name}:#{tag}"
   ].join(' ')
 end
