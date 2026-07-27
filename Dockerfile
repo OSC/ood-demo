@@ -43,6 +43,13 @@ RUN chmod 600 /etc/shadow
 USER jesse
 RUN mkdir -p /home/jesse/ondemand/dev
 
+# Set up the Job Composer's database so the app is usable on first load.
+# SECRET_KEY_BASE is only needed to boot Rails here; the PUN supplies its own at
+# runtime. The checkpoint folds the schema out of the write-ahead log so the
+# database file is self-contained in the image.
+# Exec form so the shell is bash — `source` isn't available in Docker's default sh.
+RUN ["/bin/bash", "-lc", "source /opt/ood/ondemand/enable && cd /var/www/ood/apps/sys/myjobs && SECRET_KEY_BASE=$(openssl rand -hex 32) RAILS_ENV=production bin/rake db:setup && python3 -c \"import sqlite3; sqlite3.connect('/home/jesse/ondemand/data/sys/myjobs/production.sqlite3').execute('PRAGMA wal_checkpoint(TRUNCATE)')\""]
+
 # switch back to root to do everything else
 USER root
 RUN git clone https://github.com/OSC/bc_example_jupyter.git --bare /var/git/bc_example_jupyter
