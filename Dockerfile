@@ -19,8 +19,14 @@ RUN dnf -y update && \
     dnf groupinstall -y "xfce" && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
-# RUN pip3 install 'setuptools_scm<7' && \
-RUN pip3 install jupyter
+# Pinned because Rocky 9 ships Python 3.9 and newer releases of this stack
+# require 3.10+, so an unpinned install silently stops working over time.
+RUN pip3 install \
+      jupyter==1.1.1 \
+      jupyterlab==4.5.10 \
+      notebook==7.5.7 \
+      nbformat==5.10.4 \
+      fastjsonschema==2.21.2
 
 RUN sed -i 's|--rpm|--rpm -f --insecure|g' /etc/systemd/system/httpd.service.d/ood-portal.conf
 RUN systemctl enable httpd ondemand-dex
