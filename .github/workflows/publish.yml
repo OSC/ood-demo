@@ -5,18 +5,69 @@ on:
     tags:
       - '*'
 
+defaults:
+  run:
+    shell: bash
+
+# Two releases tagged close together would otherwise race to write the same
+# manifest.
+concurrency:
+  group: publish-${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
-  push_to_registry:
-    name: Push Docker image to Repositories
-    runs-on: ubuntu-latest
+  # Build each architecture on its own native runner rather than cross-building
+  # under QEMU, which is considerably slower for an image this size.
+  build:
+    name: Build ${{ matrix.arch }} image
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: checkout
         uses: actions/checkout@v6
-      - name: build images
-        run: | 
-          rake build
+        with:
+          fetch-depth: 0
+
+      - name: setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: build image
+        run: rake build
+
       - name: login to dockerhub
-        run: podman login docker.io -u ${{ secrets.OOD_DOCKERHUB_USER }} -p ${{ secrets.OOD_DOCKERHUB_TOKEN }}
-      - name: push images to dockerhub
-        run: |
-          rake publish['docker.io']
+        run: echo "${{ secrets.OOD_DOCKERHUB_TOKEN }}" | podman login docker.io -u ${{ secrets.OOD_DOCKERHUB_USER }} --password-stdin
+
+      - name: push per-arch image
+        run: rake publish_arch['docker.io','${{ matrix.arch }}']
+
+  # Merge the per-arch images into a manifest list so that
+  # `docker pull openondemand/open-ondemand-demo` resolves to the right
+  # architecture automatically.
+  manifest:
+    name: Push multi-arch manifest
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: login to dockerhub
+        run: echo "${{ secrets.OOD_DOCKERHUB_TOKEN }}" | podman login docker.io -u ${{ secrets.OOD_DOCKERHUB_USER }} --password-stdin
+
+      - name: create and push manifest
+        run: rake manifest['docker.io']
