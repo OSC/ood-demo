@@ -333,7 +333,7 @@ mkdir -p ~/ondemand/dev
 cd ~/ondemand/dev
 ln -s ../../ondemand-src-full/apps/dashboard/ dashboard
 cd dashboard
-git checkout release_3.0
+git checkout release_4.2
 bin/bundle config --local path vendor/bundle
 bin/setup
 ```
