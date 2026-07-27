@@ -1578,12 +1578,18 @@ Jupyter system app in the menu along with your sandbox development app.
 ## Dynamic Batch Connect Fields
 
 Dynamic batch connect fields let client-side javascript react to user choices in
-the form. Introduced in 2.0 behind the `OOD_BC_DYNAMIC_JS` environment variable,
-this feature is enabled by default in modern OnDemand releases — including the
-version in this container, so there is nothing to configure.
+the form. 
+
+Let's go back into our dev configuration and enable this feature in the container:
+```
+# /home/jesse/ondemand/config/ondemand.d/ondemand.yml
+...
+bc_dynamic_js: true
+...
+```
 
 With this feature - client side javascript can dynamically change the form fields based on user
-choices. Sites only have to add more YAML to a `form.yml` to enable this behaviour.  Let's
+choices. Sites only have to add more YAML to a `form.yml` to enable this behavior.  Let's
 see some examples.
 
 ### Changing min & max values
