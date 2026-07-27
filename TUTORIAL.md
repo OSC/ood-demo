@@ -333,7 +333,7 @@ mkdir -p ~/ondemand/dev
 cd ~/ondemand/dev
 ln -s ../../ondemand-src-full/apps/dashboard/ dashboard
 cd dashboard
-git checkout release_3.0
+git checkout release_4.2
 bin/bundle config --local path vendor/bundle
 bin/setup
 ```
@@ -542,6 +542,7 @@ your app easier to reason about and faster to develop on.
 my_app/
 ├── form.yml.erb      ← User-facing form
 ├── manifest.yml      ← App metadata (Used for dashboard data)
+├── view.html.erb     ← App connection presentation in the _session card_ (backend generated data can be used here)
 ├── connection.yml    ← App server data needed on frontend (logins, hostnames, etc.)
 ├── submit.yml.erb    ← Job submission params
 └── template/
@@ -555,7 +556,8 @@ my_app/
 2. `submit.yml.erb` — Generates job submission config
 3. `before.sh.erb` — Runs before main script
 4. `script.sh.erb` — Launches the application
-5. `after.sh.erb` — Cleanup runs when the _session_ ends (_Not_ when the job ends)
+5. `view.html.erb` — Provides connection to the job and the application logs.
+6. `after.sh.erb` — Cleanup runs when the _session_ ends (_Not_ when the job ends)
 
 - Docs: https://osc.github.io/ood-documentation/latest/how-tos/app-development/interactive.html
 - Helpers source: https://github.com/OSC/ondemand/tree/master/apps/dashboard/app/helpers
@@ -860,6 +862,22 @@ git commit -m 'starting point'
 
 ### Get Jupyter Working
 
+#### Faking out Open OnDemand with an Initializer
+
+We don't actually have a Slurm cluster to submit to in this mock container, but Open OnDemand needs an adapter 
+for the schedulers it provides to work correctly. If we tried to launch, we'd get a very unfriendly looking Rails 
+error about all this.
+
+Simple fix though. We can actually just use an __initializer__ to do this with Open OnDemand. Because it is a Rails 
+app, at boot it's going to run all the initializers we provide it. So, we can define one and make Open OnDemand aware 
+of this adapter by running this command from the shell:
+```shell
+cp /etc/ood/config/apps/dashboard/initializers/localhost.rb ~/ondemand-src-full/apps/dashboard/config/initializers/localhost.rb
+```
+
+There, we just took the initializer we provided in this container for the system and now we provided it to the dev 
+dashboard we are running.
+
 #### Configure the correct cluster
 
 The example application we've created does not use the correct cluster configuration, so we've got
@@ -867,7 +885,7 @@ to modify it.
 
 If you try to submit it as is, you'll get this error:
 
-![error message that reads The cluster was never set. Either set it in form.yml.erb with `cluster` or `form.cluster` or set `cluster` in submit.yml.erb.](imgs/no_cluster.png)
+![error message that reads "The cluster was never set. Either set it in form.yml.erb with `cluster` or `form.cluster` or set `cluster` in submit.yml.erb."](imgs/no_cluster.png)
 
 We need to edit the `form.yml` in the appication's folder. We can navigate to the folder through the
 files app.  The URL is `http://localhost:8080/pun/sys/files/fs/home/jesse/ondemand/dev/jupyter/`.
@@ -1328,7 +1346,7 @@ actual script that's ran during the job, so we have to edit `template.sh.erb`.  
 this is also an ERB script, so it gets templated in Ruby before being submitted to the
 scheduler.
 
-Line 31 is as follows:
+Line 32 is as follows:
 
 ```shell
 jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
@@ -1560,12 +1578,18 @@ Jupyter system app in the menu along with your sandbox development app.
 ## Dynamic Batch Connect Fields
 
 Dynamic batch connect fields let client-side javascript react to user choices in
-the form. Introduced in 2.0 behind the `OOD_BC_DYNAMIC_JS` environment variable,
-this feature is enabled by default in modern OnDemand releases — including the
-version in this container, so there is nothing to configure.
+the form. 
+
+Let's go back into our dev configuration and enable this feature in the container:
+```
+# /home/jesse/ondemand/config/ondemand.d/ondemand.yml
+...
+bc_dynamic_js: true
+...
+```
 
 With this feature - client side javascript can dynamically change the form fields based on user
-choices. Sites only have to add more YAML to a `form.yml` to enable this behaviour.  Let's
+choices. Sites only have to add more YAML to a `form.yml` to enable this behavior.  Let's
 see some examples.
 
 ### Changing min & max values
