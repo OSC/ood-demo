@@ -36,6 +36,14 @@ podman pull docker.io/openondemand/open-ondemand-demo:latest
 podman run --rm --privileged -p 8080:8080 -h ood.demo docker.io/openondemand/open-ondemand-demo:latest
 ```
 
+## Mac Users
+
+If you are using a mac you will need to pull this different image and build.
+```shell
+docker pull https://hub.docker.com/repository/docker/travertosc/ood-demo
+docker run --rm --privileged -p 8080:8080 -h ood.demo openondemand/open-ondemand-demo:latest
+```
+
 ## Logging in
 
 Once the container is started, it will be accessible at `http://localhost:8080`.
