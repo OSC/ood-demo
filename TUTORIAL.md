@@ -542,6 +542,7 @@ your app easier to reason about and faster to develop on.
 my_app/
 ├── form.yml.erb      ← User-facing form
 ├── manifest.yml      ← App metadata (Used for dashboard data)
+├── view.html.erb     ← App connection presentation in the _session card_ (backend generated data can be used here)
 ├── connection.yml    ← App server data needed on frontend (logins, hostnames, etc.)
 ├── submit.yml.erb    ← Job submission params
 └── template/
@@ -555,7 +556,8 @@ my_app/
 2. `submit.yml.erb` — Generates job submission config
 3. `before.sh.erb` — Runs before main script
 4. `script.sh.erb` — Launches the application
-5. `after.sh.erb` — Cleanup runs when the _session_ ends (_Not_ when the job ends)
+5. `view.html.erb` — Provides connection to the job and the application logs.
+6. `after.sh.erb` — Cleanup runs when the _session_ ends (_Not_ when the job ends)
 
 - Docs: https://osc.github.io/ood-documentation/latest/how-tos/app-development/interactive.html
 - Helpers source: https://github.com/OSC/ondemand/tree/master/apps/dashboard/app/helpers
