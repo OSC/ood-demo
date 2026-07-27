@@ -9,6 +9,26 @@ Or pull it from dockerhub at `openondemand/open-ondemand-demo:latest`.
 The published image is multi-arch (`linux/amd64` and `linux/arm64`), so it runs
 natively on both Intel/AMD machines and Apple Silicon Macs.
 
+## Building from source
+
+`rake build` uses buildah or podman where they're installed, and docker
+otherwise. To build with docker directly:
+
+```
+git clone https://github.com/OSC/ood-demo.git
+cd ood-demo
+docker build -t ood-demo -f Dockerfile .
+```
+
+Then start it as described below, substituting `ood-demo` for the dockerhub
+image name.
+
+The build pulls a few GB and takes a while - it's a full Rocky 9 with XFCE,
+TurboVNC and Jupyter. The finished image is around 2.7GB on disk.
+
+On Apple Silicon, add `--platform linux/arm64` to build natively. Running an
+amd64 image under emulation is slow and has been seen to crash Docker Desktop.
+
 ## Starting the container
 
 If you'd like to build and start the container, use the rake task `rake start`.

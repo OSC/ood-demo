@@ -13,7 +13,7 @@ Live tutorial steps we took during PEARC. See the PEARC video recording to follo
 - [Passenger App Tutorial](#passenger-app-tutorial)
 - [XDMoD Integration Tutorial](#xdmod-integration-tutorial)
 
-These tutorial will be using the `dockerfile.demo` provided in the fronted Open OnDemand repo.
+This tutorial uses the container built from the `Dockerfile` in this repo.
 
 ## External links
 
@@ -72,8 +72,10 @@ you'll see buttons here to relaunch those applications.
 The 'Message of the Day' can display your message of the day similar to how shell
 logins work. OnDemand supports many formats, and the one shown is in markdown.
 
-Lastly you'll see panels for [XDMoD](../xdmod/README.md). OnDemand integrates
-with XDMoD to show pertinant information about the jobs you've recently ran.
+OnDemand can also integrate with [XDMoD](https://open.xdmod.org/) to show
+pertinent information about the jobs you've recently run. Those panels aren't
+enabled here by default - see the [XDMoD Integration
+Tutorial](#xdmod-integration-tutorial) below.
 
 ![landing page demo](imgs/landing_page_demo.gif)
 
@@ -194,7 +196,7 @@ Interactive apps are one of the main features of Open OnDemand. They allow
 users a click through interface to some of the most popular applications in
 HPC.
 
-This tutorial will go over luanching the Jupyter application as well as generic
+This tutorial will go over launching the Jupyter application as well as generic
 Linux desktops
 
 The `Interactive Apps` dropdown menu on the top navigation bar lists all the
@@ -211,8 +213,7 @@ a real site may allow desktops with GPUs and a checkbox in the form for the user
 select a GPU.
 
 There's no need to specify the account, so you can leave it blank. Fill out the rest
-of the form (noting that there are only 2 nodes in this cluster) and press the `Launch`
-button.
+of the form and press the `Launch` button.
 
 You'll be redirected to `My Interactive Sessions` page where you will see a card for this
 job. It should start in the queued state and eventually into the running state. When
@@ -220,8 +221,8 @@ it's in the running state a button will appear at the bottom of the card with th
 `Launch HPC Desktop`. Press that button when it becomes available to connect to the desktop.
 
 When you press `Launch HPC Desktop` a new tab will open connecting you to the desktop.
-Note that this desktop is running in a container on one of the compute nodes in the Slurm
-cluster.  You now have a desktop running on your compute cluster!
+This demo container runs jobs locally, but on a real site this desktop would be running
+on one of your compute nodes.  You now have a desktop running through OnDemand!
 
 Open the applications menu and launch a terminal. Once inside the terminal issue the
 `glxgears` command and see the GUI for glxgears open up.  Feel free to keep the session
@@ -248,16 +249,16 @@ users make in the form in these cards.
 
 Again when the button to `Connect to Jupyter` becomes available don't press it
 just yet. Instead you can press the button near the top of the card labeled `Host`.
-This is the host that the job is running on. It's likely cpn01 but could also be
-cpn02.  Press this button and OnDemand will open a shell session on that compute
-node in a new tab.
+This is the host that the job is running on - here that's the demo container itself,
+but on a real site it would be a compute node.  Press this button and OnDemand will
+open a shell session on that host in a new tab.
 
 This allows users to not only run an interactive application they can connect to,
 but also shell access to the job as well.
 
 Navigate back to Open OnDemand's `My interactive sessions` page and press the
 `Connect to Jupyter` button. This will open a new tab to the Jupyter application
-that's running on a compute node in your Slurm cluster!
+that's running on your job's host!
 
 Connect to the Jupyter session and navigate to the `jupyter_notebook_data` directory.
 Open the `GUI-demo.ipynb` and this should open a new tab to this notebook. Run all
@@ -320,10 +321,7 @@ This tutorial covers:
 First we need to pull the source code from the Github Repository. Let's
 [use the shell app](http://localhost:8080/pun/sys/shell/ssh/ood.demo) for this.
 
-Be sure to be on the `ondemand` host because that container has node and ruby on it,
-which we need to build the project.
-
-If you are not using the shell app, use `ssh` to connect to the `ondemand` host from the `frontend` host: `ssh ondemand`
+The demo container has node and ruby on it, which we need to build the project.
 
 Then, do the following:
 
@@ -333,7 +331,7 @@ mkdir -p ~/ondemand/dev
 cd ~/ondemand/dev
 ln -s ../../ondemand-src-full/apps/dashboard/ dashboard
 cd dashboard
-git checkout release_3.0
+git checkout release_4.2
 bin/bundle config --local path vendor/bundle
 bin/setup
 ```
@@ -435,7 +433,7 @@ Let's add these two environment variables to our `~/ondemand/dev/dashboard/.env.
 ```text
 # /home/jesse/ondemand/dev/dashboard/.env.local
 
-MOTD_PATH=/etc/motd
+MOTD_PATH=/etc/motd.md
 MOTD_FORMAT=markdown
 ```
 
@@ -491,7 +489,7 @@ any text you like here. Feel free to have fun with it!
 ```html
 <!-- /home/jesse/ondemand/config/views/widgets/_hello_world.html -->
 <div class='alert alert-info text-center' style='font-size:2.2rem;'>
-    <p>Thank you for attending the PEARC 2022 Open OnDemand Tutorial!</p>
+    <p>Thank you for attending the PEARC 2026 Open OnDemand Tutorial!</p>
 </div>
 ```
 
@@ -542,20 +540,26 @@ your app easier to reason about and faster to develop on.
 my_app/
 ├── form.yml.erb      ← User-facing form
 ├── manifest.yml      ← App metadata (Used for dashboard data)
-├── connection.yml    ← App server data needed on frontend (logins, hostnames, etc.)
 ├── submit.yml.erb    ← Job submission params
 └── template/
     ├── before.sh.erb  ← Pre-launch setup
     ├── script.sh.erb  ← Main launch script
-    └── after.sh.erb   ← Cleanup (Run at the end of the session)
+    ├── after.sh.erb   ← Runs right after the app is launched
+    └── clean.sh.erb   ← Cleanup (runs when the job ends)
 ```
 
 **Interactive App File Execution Flow:**
 1. `form.yml.erb` — Renders form → user fills it out, admin prepopulates, or content is fetched from cache 
 2. `submit.yml.erb` — Generates job submission config
 3. `before.sh.erb` — Runs before main script
-4. `script.sh.erb` — Launches the application
-5. `after.sh.erb` — Cleanup runs when the _session_ ends (_Not_ when the job ends)
+4. `script.sh.erb` — Launches the application in the background
+5. `after.sh.erb` — Runs immediately after the launch, while the app is starting.
+   This is where you wait for the app to be ready - the shipped Jupyter app uses
+   it to block until the server opens its port.
+6. OnDemand writes `connection.yml` (host, port, password) into the session
+   directory. You don't author this file - it's generated for you, and it's what
+   the "Connect to" button uses.
+7. `clean.sh.erb` — Cleanup, when the job ends
 
 - Docs: https://osc.github.io/ood-documentation/latest/how-tos/app-development/interactive.html
 - Helpers source: https://github.com/OSC/ondemand/tree/master/apps/dashboard/app/helpers
@@ -624,14 +628,17 @@ The `session` object provides runtime information about the current batch connec
 | Attribute              | What it gives you                              |
 |------------------------|------------------------------------------------|
 | `session.id`           | Unique session identifier                      |
-| `session.job_id`       | The scheduler job ID                           |
-| `session.cluster`      | Name of the cluster (matches cluster configs)  |
+| `session.job_id`       | The scheduler job ID (not set yet in `template/` scripts - the job hasn't been submitted) |
+| `session.cluster_id`   | Name of the cluster (matches cluster configs)  |
 | `session.staged_root`  | Path to the session's staged directory          |
 | `session.created_at`   | When the session was created                   |
 
+To branch on the cluster, use `context.cluster` - it's the string from the
+form. (`session.cluster` is the cluster *object*, not its name.)
+
 ```bash
 # Example: Kubernetes-aware logic
-<%- if session.cluster =~ /kubernetes/ -%>
+<%- if context.cluster =~ /kubernetes/ -%>
   # K8s-specific setup here
 <%- end -%>
 ```
@@ -643,6 +650,8 @@ Open OnDemand provides helper methods that we see users reinvent all the time. *
 #### `find_port`
 
 Finds an available port on the compute node. No need to hardcode or guess.
+Takes an optional host, then an optional port range (defaults: `localhost`,
+2000-65535).
 ```bash
 # In script.sh.erb:
 port=$(find_port ${host})
@@ -662,14 +671,15 @@ export RSTUDIO_PASSWORD="${password}"
 
 #### `connection.yml` entry
 
-Suppose we have an app that wants to use its own auth mechanism.  would 
-not be aware of this password which gets generated and it could create a 
+Suppose we have an app that wants to use its own auth mechanism. Open OnDemand
+would not be aware of this password which gets generated and it could create a
 complex work around in order to retrieve this data to share with Open OnDemand.
 
-Well Open OnDemand has a pattern for this! We use the `connection.yml` and the 
-`conn_params` in the `submit.yml.erb` file in conjunction with the app's 
-`view.html.erb` file to generate this data, plug it in for the user, and never 
-expose the credentials or involve sharing of those credentials.
+Well Open OnDemand has a pattern for this! Set `conn_params` in the
+`submit.yml.erb` and OnDemand writes those values into a `connection.yml` for
+the session, which the app's `view.html.erb` can then read. That plugs the
+credentials in for the user without ever exposing them. Note `host`, `port` and
+`password` are always included, so you only list the extras you need.
 
 We will use RStudio to show this pattern off, and to notice that this app 
 needs a `csrf` token to launch, another quirk you may find in apps that 
@@ -711,7 +721,7 @@ put all this data into our app's session card when it's ready:
   let expires = "expires=" + date.toUTCString();
   let cookiePath = "path=/rnode/" + "<%= host.to_s %>" + "/" + "<%= port.to_s %>/";
   /**
-    rstuido wants a cookie called csrf-token - but that's going to change in 2020!
+    rstudio wants a cookie called csrf-token - but that's going to change in 2020!
   */
   let cookie = `csrf-token=<%= csrf_token %>;${expires};${cookiePath};SameSite=strict;secure`;
   document.cookie = cookie;
@@ -879,6 +889,12 @@ In the file Editor, specify `localhost` as the cluster attribute near the top of
 so: `cluster: "localhost"`. This matches the cluster configured in this container at
 `/etc/ood/config/clusters.d/localhost.yml`. Save this file by clicking the "Save" button at
 the top left.
+
+> **Changes to a sandbox app need a web server restart.** The dashboard caches
+> your sandbox apps, so after editing `form.yml`, `submit.yml.erb` or
+> `manifest.yml` you'll need to restart before the change shows up. Use
+> "Restart Web Server" in the `</>` Develop menu. If you edit a file and the
+> form looks the same - or you get the same error again - this is usually why.
 
 #### Launch the Jupyter Application
 
@@ -1259,7 +1275,7 @@ At this point, this should be the entirety of the `submit.yml.erb` and `form.yml
 They're given here in full if you want to copy/paste them. And remember to [save your spot](#save-your-spot)!
 
 ```yaml
-# script.yml.erb
+# submit.yml.erb
 ---
 script:
   queue_name: "<%= custom_queue %>"
@@ -1324,7 +1340,7 @@ Refresh the [new session form](http://localhost:8080/pun/sys/dashboard/batch_con
 and you should now see your updates.
 
 For this change, there's no need to edit the `submit.yml.erb`.  This toggle happens in the
-actual script that's ran during the job, so we have to edit `template.sh.erb`.  Note that
+actual script that's ran during the job, so we have to edit `template/script.sh.erb`.  Note that
 this is also an ERB script, so it gets templated in Ruby before being submitted to the
 scheduler.
 
@@ -2003,6 +2019,4 @@ Review Job Composer links - access Job Composer
 </details>
 
 ## Tutorial Navigation
-[Next Step - Open XDMoD](../xdmod/README.md)  
-[Previous Step - ColdFront](../coldfront/README.md)  
-[Back to Start](../README.md)  
+[Back to Start](README.md)  
