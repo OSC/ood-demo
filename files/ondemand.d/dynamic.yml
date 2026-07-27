@@ -1,0 +1,6 @@
+---
+# Enable dynamic batch connect form fields (data-min-*, data-max-*, data-set-*,
+# data-hide-*). This defaults to false in OnDemand 4.2, and without it the
+# tutorial's "Dynamic Batch Connect Fields" sections silently do nothing — the
+# data attributes render into the option tags but no JavaScript consumes them.
+bc_dynamic_js: true

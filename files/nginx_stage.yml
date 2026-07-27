@@ -1,0 +1,9 @@
+---
+# Enables the dashboard's "Develop" menu, which the app development tutorial
+# depends on. Without OOD_DEV_APPS_ROOT set it defaults to /dev/null and the
+# menu never appears.
+#
+# %{user} is not interpolated here — nginx_stage only substitutes it in path
+# settings, not in pun_custom_env values. This container has a single user.
+pun_custom_env:
+  OOD_DEV_APPS_ROOT: "/var/www/ood/apps/dev/jesse/gateway"

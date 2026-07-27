@@ -60,6 +60,8 @@ COPY files/clusters.d /etc/ood/config/clusters.d
 COPY files/apps /var/www/ood/apps/sys/
 COPY files/config /etc/ood/config/apps/
 COPY files/motd.md /etc/motd.md
+COPY files/nginx_stage.yml /etc/ood/config/nginx_stage.yml
+COPY files/ondemand.d /etc/ood/config/ondemand.d
 
 COPY files/apache/00-mutex.conf /etc/httpd/conf.d/00-mutex.conf
 RUN mkdir -p /run/httpd
