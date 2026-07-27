@@ -41,7 +41,7 @@ podman run --rm --privileged -p 8080:8080 -h ood.demo docker.io/openondemand/ope
 If you are using a mac you will need to pull this different image and build.
 ```shell
 docker pull travertosc/ood-demo:latest
-docker run --rm --privileged -p 8080:8080 -h ood.demo openondemand/open-ondemand-demo:latest
+docker run -d --rm --privileged -p 8080:8080 -h ood.demo travertosc/ood-demo:latest
 ```
 
 ## Logging in
