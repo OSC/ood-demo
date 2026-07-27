@@ -1346,7 +1346,7 @@ actual script that's ran during the job, so we have to edit `template.sh.erb`.  
 this is also an ERB script, so it gets templated in Ruby before being submitted to the
 scheduler.
 
-Line 31 is as follows:
+Line 32 is as follows:
 
 ```shell
 jupyter notebook --config="${CONFIG_FILE}" <%= context.extra_jupyter_args %>
