@@ -5,11 +5,14 @@ RUN dnf install -y https://yum.osc.edu/ondemand/4.2/ondemand-release-web-4.2-1.e
     dnf install -y https://yum.osc.edu/ondemand/4.2/ondemand-release-compute-4.2-1.el9.noarch.rpm && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
+# python3-devel resolves against a newer python3 than the first update leaves
+# in place, so python3 is brought up to match before installing it.
 RUN dnf -y update && \
     dnf install -y dnf-utils && \
     dnf config-manager --set-enabled crb && \
     dnf -y module enable nodejs:22 ruby:3.3 && \
     dnf install -y epel-release && \
+    dnf -y update python3 python3-libs && \
     dnf install -y procps libffi-devel python3-devel gcc && \
     dnf install -y ondemand ondemand-dex && \
     dnf install -y xz libyaml-devel turbovnc python3-websockify && \
