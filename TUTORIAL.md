@@ -862,6 +862,22 @@ git commit -m 'starting point'
 
 ### Get Jupyter Working
 
+#### Faking out Open OnDemand with an Initializer
+
+We don't actually have a Slurm cluster to submit to in this mock container, but Open OnDemand needs an adapter 
+for the schedulers it provides to work correctly. If we tried to launch, we'd get a very unfriendly looking Rails 
+error about all this.
+
+Simple fix though. We can actually just use an __initializer__ to do this with Open OnDemand. Because it is a Rails 
+app, at boot it's going to run all the initializers we provide it. So, we can define one and make Open OnDemand aware 
+of this adapter by running this command from the shell:
+```shell
+cp /etc/ood/config/apps/dashboard/initializers/localhost.rb ~/ondemand-src-full/apps/dashboard/config/initializers/localhost.rb
+```
+
+There, we just took the initializer we provided in this container for the system and now we provided it to the dev 
+dashboard we are running.
+
 #### Configure the correct cluster
 
 The example application we've created does not use the correct cluster configuration, so we've got
@@ -869,7 +885,7 @@ to modify it.
 
 If you try to submit it as is, you'll get this error:
 
-![error message that reads The cluster was never set. Either set it in form.yml.erb with `cluster` or `form.cluster` or set `cluster` in submit.yml.erb.](imgs/no_cluster.png)
+![error message that reads "The cluster was never set. Either set it in form.yml.erb with `cluster` or `form.cluster` or set `cluster` in submit.yml.erb."](imgs/no_cluster.png)
 
 We need to edit the `form.yml` in the appication's folder. We can navigate to the folder through the
 files app.  The URL is `http://localhost:8080/pun/sys/files/fs/home/jesse/ondemand/dev/jupyter/`.
