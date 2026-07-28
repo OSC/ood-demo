@@ -491,7 +491,7 @@ any text you like here. Feel free to have fun with it!
 ```html
 <!-- /home/jesse/ondemand/config/views/widgets/_hello_world.html -->
 <div class='alert alert-info text-center' style='font-size:2.2rem;'>
-    <p>Thank you for attending the PEARC 2026 Open OnDemand Tutorial!</p>
+    <p>Thank you for following the Open OnDemand Tutorial!</p>
 </div>
 ```
 
