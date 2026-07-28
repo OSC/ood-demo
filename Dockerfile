@@ -14,6 +14,9 @@ RUN dnf -y update && \
     dnf install -y epel-release && \
     dnf -y update python3 python3-libs && \
     dnf install -y procps libffi-devel python3-devel gcc && \
+    # Headers for the native gems the tutorial's dashboard build compiles
+    # (nokogiri wants zlib and libxml2/libxslt).
+    dnf install -y zlib-devel libxml2-devel libxslt-devel && \
     dnf install -y ondemand ondemand-dex && \
     dnf install -y xz libyaml-devel turbovnc python3-websockify && \
     dnf groupinstall -y "xfce" && \
