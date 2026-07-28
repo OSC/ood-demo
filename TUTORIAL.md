@@ -194,7 +194,7 @@ Interactive apps are one of the main features of Open OnDemand. They allow
 users a click through interface to some of the most popular applications in
 HPC.
 
-This tutorial will go over luanching the Jupyter application as well as generic
+This tutorial will go over launching the Jupyter application as well as generic
 Linux desktops
 
 The `Interactive Apps` dropdown menu on the top navigation bar lists all the
@@ -435,7 +435,7 @@ Let's add these two environment variables to our `~/ondemand/dev/dashboard/.env.
 ```text
 # /home/jesse/ondemand/dev/dashboard/.env.local
 
-MOTD_PATH=/etc/motd
+MOTD_PATH=/etc/motd.md
 MOTD_FORMAT=markdown
 ```
 
@@ -491,7 +491,7 @@ any text you like here. Feel free to have fun with it!
 ```html
 <!-- /home/jesse/ondemand/config/views/widgets/_hello_world.html -->
 <div class='alert alert-info text-center' style='font-size:2.2rem;'>
-    <p>Thank you for attending the PEARC 2022 Open OnDemand Tutorial!</p>
+    <p>Thank you for following the Open OnDemand Tutorial!</p>
 </div>
 ```
 
@@ -713,7 +713,7 @@ put all this data into our app's session card when it's ready:
   let expires = "expires=" + date.toUTCString();
   let cookiePath = "path=/rnode/" + "<%= host.to_s %>" + "/" + "<%= port.to_s %>/";
   /**
-    rstuido wants a cookie called csrf-token - but that's going to change in 2020!
+    rstudio wants a cookie called csrf-token - but that's going to change in 2020!
   */
   let cookie = `csrf-token=<%= csrf_token %>;${expires};${cookiePath};SameSite=strict;secure`;
   document.cookie = cookie;
@@ -1277,7 +1277,7 @@ At this point, this should be the entirety of the `submit.yml.erb` and `form.yml
 They're given here in full if you want to copy/paste them. And remember to [save your spot](#save-your-spot)!
 
 ```yaml
-# script.yml.erb
+# submit.yml.erb
 ---
 script:
   queue_name: "<%= custom_queue %>"
@@ -1342,7 +1342,7 @@ Refresh the [new session form](http://localhost:8080/pun/sys/dashboard/batch_con
 and you should now see your updates.
 
 For this change, there's no need to edit the `submit.yml.erb`.  This toggle happens in the
-actual script that's ran during the job, so we have to edit `template.sh.erb`.  Note that
+actual script that's ran during the job, so we have to edit `script.sh.erb`.  Note that
 this is also an ERB script, so it gets templated in Ruby before being submitted to the
 scheduler.
 
